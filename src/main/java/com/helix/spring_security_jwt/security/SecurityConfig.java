@@ -5,6 +5,7 @@ import com.helix.spring_security_jwt.jwt.AuthTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -41,7 +42,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain customSecurityChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(request -> request.requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/login", "/register").permitAll().anyRequest().authenticated());
+                .requestMatchers("/login", "/register").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated());
+
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizationHandler));
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
